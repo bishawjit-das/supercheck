@@ -398,6 +398,7 @@ export const auth = betterAuth({
     : undefined,
   emailAndPassword: {
     enabled: true,
+    disableSignUp: process.env.DISABLE_SIGN_UP === "true" ? true : false,
     // Only require email verification in cloud mode
     requireEmailVerification: isCloudHosted(),
     sendResetPassword: async ({ user, url }, request) => {

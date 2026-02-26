@@ -80,7 +80,7 @@ export class EmailService {
             }
           : {}),
         tls: {
-          rejectUnauthorized: true,
+          rejectUnauthorized: smtpSecure,
           minVersion: "TLSv1.2" as const, // Required for ZeptoMail and security best practices
         },
         connectionTimeout: 10000,
