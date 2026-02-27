@@ -12,22 +12,20 @@ export const GET = betterAuthHandler.GET;
 
 /**
  * POST /api/auth/sign-up/email
- * 
- * Cloud mode: Email/password sign-up is INVITE-ONLY.
- *   Users must have a valid pending invitation to register with email/password.
- *   This is enforced at the API boundary (not just UI redirects).
  *
- * Self-hosted mode: Open registration.
- *   Anyone can create an account with email/password without an invitation.
- *   This enables deployments behind corporate proxies where OAuth is unavailable.
+ * When DISABLE_SIGN_UP is true: invite-only (valid pending invitation required).
+ * When DISABLE_SIGN_UP is false and self-hosted: open registration.
+ * Cloud mode: always invite-only.
  */
 export async function POST(request: NextRequest) {
-  // Self-hosted mode: allow open registration without invitation
-  if (isSelfHosted()) {
+  const signUpDisabled = process.env.DISABLE_SIGN_UP === "true";
+  const inviteRequired = signUpDisabled || !isSelfHosted();
+
+  if (!inviteRequired) {
     return betterAuthHandler.POST(request);
   }
 
-  // Cloud mode: enforce invite-only sign-up
+  // Enforce invite-only sign-up
   try {
     // Clone the request so we can read the body without consuming it
     const clonedRequest = request.clone();

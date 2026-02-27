@@ -398,7 +398,8 @@ export const auth = betterAuth({
     : undefined,
   emailAndPassword: {
     enabled: true,
-    disableSignUp: process.env.DISABLE_SIGN_UP === "true" ? true : false,
+    // Sign-up allowed when invited; custom route /api/auth/sign-up/email enforces invite when DISABLE_SIGN_UP is true
+    disableSignUp: false,
     // Only require email verification in cloud mode
     requireEmailVerification: isCloudHosted(),
     sendResetPassword: async ({ user, url }, request) => {

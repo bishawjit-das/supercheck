@@ -18,12 +18,12 @@ const { promisify } = require('util');
 
 const scryptAsync = promisify(crypto.scrypt);
 
-// Match Better Auth's format and params: salt:key (both hex), scrypt N=16384 r=16 p=1 dkLen=64
+// Match Better Auth: salt:key (both hex). Salt passed as string so scrypt uses UTF-8 bytes (32); same as @noble/hashes.
 function hashPassword(password) {
   const salt = crypto.randomBytes(16).toString('hex');
   const normalized = String(password).normalize('NFKC');
   const opts = { N: 16384, r: 16, p: 1, maxmem: 128 * 16384 * 16 * 2 };
-  return scryptAsync(normalized, Buffer.from(salt, 'hex'), 64, opts).then((buf) => `${salt}:${buf.toString('hex')}`);
+  return scryptAsync(normalized, salt, 64, opts).then((buf) => `${salt}:${buf.toString('hex')}`);
 }
 
 async function main() {
